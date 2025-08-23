@@ -1,0 +1,24 @@
+# -----------------------------------------------------------------
+# CORE DEPENDENCIES
+# These are essential for the basic functionality of the script.
+# -----------------------------------------------------------------
+
+telethon  # For interacting with the Telegram API
+pandas    # For data manipulation and exporting to CSV
+
+# -----------------------------------------------------------------
+# OPTIONAL / FUTURE FEATURE DEPENDENCIES
+# Install these as you begin implementing the new features
+# listed in the project roadmap.
+# -----------------------------------------------------------------
+
+# --- For Natural Language Processing (NLP) Features ---
+# textblob          # For easy sentiment analysis
+# nltk              # For keyword extraction and stop-word removal
+# scikit-learn      # For advanced topic modeling (e.g., TF-IDF)
+
+# --- For Data Visualization & Reporting Features ---
+# matplotlib        # For creating charts and graphs
+# seaborn           # For enhanced statistical visualizations
+# wordcloud         # For generating word cloud images
+# fpdf2             # For generating PDF reports

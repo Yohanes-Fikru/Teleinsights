@@ -1,0 +1,4 @@
+*.session
+*.csv
+
+my_env/
