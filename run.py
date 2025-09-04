@@ -42,11 +42,13 @@ async def analyze_channel():
                 comment_count = message.replies.replies
 
             reactions_summary = {}
+            total_reactions = 0
             if message.reactions:
                 for reaction in message.reactions.results:
                     emoji = reaction.reaction.emoticon
                     count = reaction.count
                     reactions_summary[emoji] = count
+                    total_reactions += count
 
             # 3. Post Type
             post_type = []
@@ -78,6 +80,11 @@ async def analyze_channel():
                 if hasattr(largest_photo, 'size'):
                      file_size_mb = round(largest_photo.size / (1024 * 1024), 2)
 
+            # 5. --- NEW: Calculate Engagement Rate ---
+            # Engagement Rate = ((Comments + Forwards + Total Reactions) / Views) * 100
+            total_engagement = comment_count + forward_count + total_reactions
+            engagement_rate = (total_engagement / view_count) * 100 if view_count > 0 else 0
+
 
             # Store all collected data in a dictionary
             post_data = {
@@ -86,7 +93,9 @@ async def analyze_channel():
                 "Views": view_count,
                 "Forwards": forward_count,
                 "Comments": comment_count,
-                "Reactions": reactions_summary if reactions_summary else "None",
+                "Total Reactions": total_reactions,
+                "Engagement Rate (%)": round(engagement_rate, 2),
+                "Reactions Breakdown": reactions_summary if reactions_summary else "None",
                 "Post Type": ', '.join(post_type),
                 "Character Count": char_count,
                 "File Size (MB)": file_size_mb,
@@ -101,7 +110,8 @@ async def analyze_channel():
             print(f"  - Views: {post_data['Views']}")
             print(f"  - Forwards: {post_data['Forwards']}")
             print(f"  - Comments: {post_data['Comments']}")
-            print(f"  - Reactions: {post_data['Reactions']}")
+            print(f"  - Total Reactions: {post_data['Total Reactions']} | Breakdown: {post_data['Reactions Breakdown']}")
+            print(f"  - Engagement Rate: {post_data['Engagement Rate (%)']}%")
             print(f"  - Type: {post_data['Post Type']}")
             print(f"  - Text Length: {post_data['Character Count']} characters")
             print(f"  - Attachment Size: {post_data['File Size (MB)']} MB")
@@ -113,6 +123,15 @@ async def analyze_channel():
         # --- (Optional) Save the data to a CSV file for further analysis ---
         if all_posts_data:
             df = pd.DataFrame(all_posts_data)
+            
+            # Reorder columns to have engagement rate next to other engagement metrics
+            column_order = [
+                "Post ID", "Date", "Views", "Forwards", "Comments", 
+                "Total Reactions", "Engagement Rate (%)", "Reactions Breakdown", 
+                "Post Type", "Character Count", "File Size (MB)", "Message Text"
+            ]
+            df = df[column_order]
+
             output_filename = f"{CHANNEL_USERNAME}_channel_analysis.csv"
             df.to_csv(output_filename, index=False)
             print(f"\nAll data has been saved to '{output_filename}'")
